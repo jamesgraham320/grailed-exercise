@@ -1,0 +1,11 @@
+{
+  "name": "grailed-exercise",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:jamesgraham320/grailed-exercise.git",
+  "license": "MIT",
+  "dependencies": {
+    "sequelize": "^4.43.0",
+    "sqlite3": "^4.0.6"
+  }
+}
