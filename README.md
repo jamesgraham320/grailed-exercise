@@ -15,8 +15,8 @@ Line 85 finds all disallowed usernames
 This is my first project using sequelize as an ORM or using javascript for any back end work.
 I would normally use Rails with ActiveRecord but a full api did not seem necessary. 
 I am also currently more comfortable writing javascript. 
-It presented some unique challenges as I normally use rails scaffolding for back end manipulation and rarely write raw SQL. 
-Although I have little experience using Sequelize, I chose to use javascript because I often find it easier to build small projects using Node.
+It presented some unique challenges as I would ordinarily use rails scaffolding for back end manipulation and rarely write raw SQL. 
+Although I have little experience using Sequelize, I chose to use javascript because I often find it easier to build small projects using Node and thought it would be an interesting new challenge!
 
 ## Deliverables
 
