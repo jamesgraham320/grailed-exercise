@@ -1,5 +1,5 @@
 
-// Joining the users table to itself to find all collisions via usernames
+// Joining the users table to itself to find all username collisions
 const usersSelfJoinQuery = `
 SELECT u1.id, u1.username
 FROM users u1

@@ -8,15 +8,15 @@ The Node script runs in index.js
 - Simply uncomment lines 72 and 73 then run the index file to print a dry run of affected rows and the changes to their usernames
 - Adjust the `dryRun` variable to false and run the script again to commit all changes
 
-Line 72 finds all duplicate usernames
-Line 73 finds all disallowed usernames
+Line 82 finds all duplicate usernames
+Line 85 finds all disallowed usernames
 
 ## Experience
 This is my first project using sequelize as an ORM or using javascript for any back end work.
 I would normally use Rails with ActiveRecord but a full api did not seem necessary. 
 I am also currently more comfortable writing javascript. 
 It presented some unique challenges as I normally use rails scaffolding for back end manipulation and rarely write raw SQL. 
-Although I have little experiene using Sequelize, I chose to use javascript because I often find it easier to build small projects using Node.
+Although I have little experience using Sequelize, I chose to use javascript because I often find it easier to build small projects using Node.
 
 ## Deliverables
 
