@@ -5,9 +5,12 @@ In the spirit of investing in our community, we've decided to support pretty URL
 Exercise
 
 Given the SQLite database found here, please complete the following:
-Write a function that finds all users with disallowed usernames. Disallowed usernames can be found in the `disallowed_usernames` table.
-Write a function that resolves all username collisions. E.g., two users with the username `foo` should become `foo` and `foo1`. The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.
-Write a function that resolves all disallowed usernames. E.g., `grailed` becomes `grailed1`. The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.
+1. Write a function that finds all users with disallowed usernames. Disallowed usernames can be found in the `disallowed_usernames` table.
+
+2. Write a function that resolves all username collisions. E.g., two users with the username `foo` should become `foo` and `foo1`. The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.
+
+3. Write a function that resolves all disallowed usernames. E.g., `grailed` becomes `grailed1`. The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.
+
 The expected deliverable is one or more files that fulfill the spec. It does not have to be a fully fledged application.
 
 Once completed, please send us a link to the GitHub repo and include a README that documents how to use interface with your submission.

@@ -1,6 +1,8 @@
 const Sequelize = require('sequelize')
 const sqlz = new Sequelize('sqlite:./grailed-exercise.sqlite3')
+const queries = require('./queries.js')
 
+// Defining models for Sequelize
 const DisallowedUsername = sqlz.define('disallowed_username', {
   invalid_username: Sequelize.STRING
 } , { 
@@ -14,31 +16,79 @@ const User = sqlz.define('user', {
   timestamps: false
 })
 
-DisallowedUsername.findAll().then((usernames) => {
-  const badNames = {}
-  usernames.forEach( username => {
-    badNames[username.invalid_username] = [
-      username.id, 
-      username.invalid_username
-    ]
+function findUsernameCollisions(option) {
+
+  sqlz.query(queries.usersSelfJoinQuery).then(queryResult => {
+    let users = queryResult[0]
+
+    let previous = users[0]
+    let count = 0
+    const fixedUsers = users.map( (user, index) => {
+      if (index === 0) {return user}
+
+      // check if last user has the same username, if so, adjust the username
+      if (previous && user.username === previous) {
+        previous = user.username
+        count++
+        user.username += count
+        user.updated = true
+        return user
+
+      } else {
+        count = 0
+        previous = user.username
+        user.updated = false
+        return user
+      }
+    })
+    let filteredData = fixedUsers.filter( row => row.updated)
+    return filteredData
+  }).then(users => {
+    if (option) {
+      printAffectedRows(users)
+    } else {
+      commitChanges(users)
+    }
+      
   })
-})
 
-let usersSelfJoinQuery = `
-SELECT u1.id, u1.username
-FROM users u1
-INNER JOIN users u2 ON u2.username = u1.username AND (u2.id <> u1.id)
-ORDER BY u1.username, u1.id;
-`
+}
 
-let invalidUsernameJoinQuery = `
-SELECT users.id, users.username
-FROM users
-INNER JOIN disallowed_usernames du ON du.invalid_username = users.username;
-`
-  
+findUsernameCollisions(true)
+
+function commitChanges(data) {
+  sqlz.transaction( t => {
+    let promises = []
+    data.forEach( row => {
+      let current = User.build({id: row.id, username: row.username})
+      current.isNewRecord = false
+      promises.push(current.save({transaction: t}))
+    })
+    return Promise.all(promises)
+  }).then( result => {
+    console.log("Bulk update completed succesfully")
+  }).catch( err => {
+    console.log("Bulk update failed")
+    console.log(err)
+  })
+}
+
+function printAffectedRows(data) {
+  if(data.length > 1) {
+    console.log("These following Users need to be updated:")
+    console.log('| ID  |  Username  |')
+    data.forEach( (row, index) => {
+      console.log(`| ${row.id}  | ${row.username}`)
+    })
+  } else {
+    console.log("There are no rows that need updating!")
+  }
+}
+
+
 
   /*
+initial attempts with sequelize
 User.findAll().then((users) => {
   allNames = {}
   collisions = {}
@@ -49,9 +99,20 @@ User.findAll().then((users) => {
     }
   })
 })
+
+
+DisallowedUsername.findAll().then((usernames) => {
+  const badNames = {}
+  usernames.forEach( username => {
+    badNames[username.invalid_username] = [
+      username.id, 
+      username.invalid_username
+    ]
+  })
+})
 */
 
-/*
+/* messing around with node sqlite3
  * connecting to database with sqlite3 package
  *const sqlite3 = require('sqlite3').verbose()
  *let db =  new sqlite3.Database('./grailed-exercise.sqlite3', 
