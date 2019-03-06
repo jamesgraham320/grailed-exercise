@@ -5,8 +5,8 @@ This project is built with Node using Yarn, packages include:
 
 ## How To
 The Node script runs in index.js
-Simply uncomment lines 72 and 73 then run the index file to print a dry run of affected rows and the changes to their usernames
-Adjust the `dryRun` variable to false and run the script again to commit all changes
+- Simply uncomment lines 72 and 73 then run the index file to print a dry run of affected rows and the changes to their usernames
+- Adjust the `dryRun` variable to false and run the script again to commit all changes
 
 Line 72 finds all duplicate usernames
 Line 73 finds all disallowed usernames
