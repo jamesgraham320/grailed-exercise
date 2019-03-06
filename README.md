@@ -1,4 +1,24 @@
-# grailed-exercise
+# James Graham - Grailed Exercise
+This project is built with Node using Yarn, packages include:
+  - sqlite3
+  - sequelize
+
+## How To
+The Node script runs in index.js
+Simply uncomment lines 72 and 73 then run the index file to print a dry run of affected rows and the changes to their usernames
+Adjust the `dryRun` variable to false and run the script again to commit all changes
+
+Line 72 finds all duplicate usernames
+Line 73 finds all disallowed usernames
+
+## Experience
+This is my first project using sequelize as an ORM or using javascript for any back end work.
+I would normally use Rails with ActiveRecord but a full api did not seem necessary. 
+I am also currently more comfortable writing javascript. 
+It presented some unique challenges as I normally use rails scaffolding for back end manipulation and rarely write raw SQL. 
+Although I have little experiene using Sequelize, I chose to use javascript because I often find it easier to build small projects using Node.
+
+## Deliverables
 
 In the spirit of investing in our community, we've decided to support pretty URLs for user profiles (e.g., grailed.com/god). Unfortunately there are two problems: we forgot to make usernames unique (doh!), and some users have usernames that we want to disallow such as privacy, grailed, about, etc..
 

@@ -2,7 +2,7 @@ const Sequelize = require('sequelize')
 const sqlz = new Sequelize('sqlite:./grailed-exercise.sqlite3')
 const queries = require('./queries.js')
 
-// Defining models for Sequelize
+// Defining models for Sequelize use
 const DisallowedUsername = sqlz.define('disallowed_username', {
   invalid_username: Sequelize.STRING
 } , { 
@@ -16,9 +16,10 @@ const User = sqlz.define('user', {
   timestamps: false
 })
 
-function findUsernameCollisions(option) {
 
-  sqlz.query(queries.usersSelfJoinQuery).then(queryResult => {
+function resolveCollisions(query, options) {
+
+  sqlz.query(query).then(queryResult => {
     let users = queryResult[0]
 
     let previous = users[0]
@@ -26,7 +27,7 @@ function findUsernameCollisions(option) {
     const fixedUsers = users.map( (user, index) => {
       if (index === 0) {return user}
 
-      // check if last user has the same username, if so, adjust the username
+      // Iterate through all users and update their usernames to get rid of collisions
       if (previous && user.username === previous) {
         previous = user.username
         count++
@@ -37,14 +38,23 @@ function findUsernameCollisions(option) {
       } else {
         count = 0
         previous = user.username
-        user.updated = false
+        if (options.checkDisallowed) {
+          previous = user.username
+          count++
+          user.username += count
+          user.updated = true
+        } else {
+          user.updated = false
+        }
         return user
       }
     })
+
+    // Filter out only updated rows
     let filteredData = fixedUsers.filter( row => row.updated)
     return filteredData
   }).then(users => {
-    if (option) {
+    if (options.dryRun) {
       printAffectedRows(users)
     } else {
       commitChanges(users)
@@ -54,13 +64,21 @@ function findUsernameCollisions(option) {
 
 }
 
-findUsernameCollisions(true)
+// Methods below are final run methods, 
+// Query parameter - input which SQL query you wish to check for collisions
+// Options include:
+//    dryRun - true to print affected rows, false to find, update and change all affected rows
+//    checkDisallowed - toggle between checking for disallowed usernames (true)  and  checking for non-unique username collisions (false)
 
-function commitChanges(data) {
+ //resolveCollisions(queries.usersSelfJoinQuery, {dryRun: true, checkDisallowed: false})
+ //resolveCollisions(queries.invalidUsernameJoinQuery, {dryRun: true, checkDisallowed: true})
+
+// Iterate through array of users and update each affected username in one transaction
+function commitChanges(users) {
   sqlz.transaction( t => {
     let promises = []
-    data.forEach( row => {
-      let current = User.build({id: row.id, username: row.username})
+    users.forEach( user => {
+      let current = User.build({id: user.id, username: user.username})
       current.isNewRecord = false
       promises.push(current.save({transaction: t}))
     })
@@ -73,12 +91,13 @@ function commitChanges(data) {
   })
 }
 
-function printAffectedRows(data) {
-  if(data.length > 1) {
+// If dry run option is selected, print all affected rows to be changed rather than update
+function printAffectedRows(users) {
+  if(users.length > 1) {
     console.log("These following Users need to be updated:")
     console.log('| ID  |  Username  |')
-    data.forEach( (row, index) => {
-      console.log(`| ${row.id}  | ${row.username}`)
+    users.forEach( (user, index) => {
+      console.log(`| ${user.id}  | ${user.username}`)
     })
   } else {
     console.log("There are no rows that need updating!")
@@ -86,55 +105,3 @@ function printAffectedRows(data) {
 }
 
 
-
-  /*
-initial attempts with sequelize
-User.findAll().then((users) => {
-  allNames = {}
-  collisions = {}
-  
-  users.forEach(user => {
-    if (!allNames[user.username]) {
-      allNames[user.username] = []
-    }
-  })
-})
-
-
-DisallowedUsername.findAll().then((usernames) => {
-  const badNames = {}
-  usernames.forEach( username => {
-    badNames[username.invalid_username] = [
-      username.id, 
-      username.invalid_username
-    ]
-  })
-})
-*/
-
-/* messing around with node sqlite3
- * connecting to database with sqlite3 package
- *const sqlite3 = require('sqlite3').verbose()
- *let db =  new sqlite3.Database('./grailed-exercise.sqlite3', 
- *  err => {
- *    if (err) {
- *      return console.error(err.message)
- *    }
- *    console.log("Connected to database")
- *})
- *
- * Creating disallowed usernames object for fast and easy reference
- *db.serialize( () => {
- *
- *  db.all(`
- *    SELECT * FROM disallowed_usernames;
- *  `, (err, rows) => {
- *    const badNames = {}
- *    rows.forEach ( row => {
- *      badNames[row.invalid_username] = row
- *    })
- *  })
- *})
- *
- *db.close()
- */
